@@ -17,22 +17,24 @@ namespace Newtomsoft.Tools
 
     public static class EntityFrameworkTools<T> where T : DbContext
     {
+        /// <summary>
+        /// persitence mode
+        /// </summary>
         private const string SQLITE = "Sqlite";
         private const string SQLSERVER = "SqlServer";
         private const string POSTGRESQL = "PostgreSql";
         private const string IN_MEMORY = "InMemory";
+
+        /// <summary>
+        /// default ASPNETCORE_ENVIRONMENT env 
+        /// </summary>
         private const string DEVELOPMENT = "Development";
 
-        private static void UseDatabase(DbContextOptionsBuilder<T> optionBuilder, string persistence, string connectionString)
-        {
-            if (persistence == SQLSERVER)
-                optionBuilder.UseSqlServer(connectionString);
-            else if (persistence == POSTGRESQL)
-                optionBuilder.UseNpgsql(connectionString);
-            else if (persistence == SQLITE)
-                optionBuilder.UseSqlite(connectionString);
-        }
-
+        /// <summary>
+        /// Use in your Startup ConfigureServices (for asp.net)
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
         public static void AddDbContext(IServiceCollection services, IConfiguration configuration)
         {
             string persistence = Environment.GetEnvironmentVariable("PERSISTENCE");
@@ -46,6 +48,11 @@ namespace Newtomsoft.Tools
                 throw new ArgumentException("No DbContext defined !");
         }
 
+        /// <summary>
+        /// Use in your CreateDbContext class
+        /// </summary>
+        /// <param name="guiProjectName"></param>
+        /// <returns></returns>
         public static T CreateDbContext(string guiProjectName)
         {
             DbContextOptionsBuilder<T> optionBuilder = new DbContextOptionsBuilder<T>();
@@ -63,6 +70,15 @@ namespace Newtomsoft.Tools
             Console.WriteLine($"connectionString is : {connectionString}");
             UseDatabase(optionBuilder, persistence, connectionString);
             return (T)Activator.CreateInstance(typeof(T), optionBuilder.Options);
+        }
+        private static void UseDatabase(DbContextOptionsBuilder<T> optionBuilder, string persistence, string connectionString)
+        {
+            if (persistence == SQLSERVER)
+                optionBuilder.UseSqlServer(connectionString);
+            else if (persistence == POSTGRESQL)
+                optionBuilder.UseNpgsql(connectionString);
+            else if (persistence == SQLITE)
+                optionBuilder.UseSqlite(connectionString);
         }
     }
 }
