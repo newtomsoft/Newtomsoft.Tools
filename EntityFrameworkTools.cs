@@ -23,6 +23,7 @@ namespace Newtomsoft.Tools
         private const string SQLITE = "Sqlite";
         private const string SQLSERVER = "SqlServer";
         private const string POSTGRESQL = "PostgreSql";
+        private const string MYSQL = "MySql";
         private const string IN_MEMORY = "InMemory";
 
         /// <summary>
@@ -44,6 +45,8 @@ namespace Newtomsoft.Tools
                 services.AddDbContext<T>(options => options.UseSqlite(EntityFrameworkTools.AddPathToSqliteConectionString(Path.Combine(Directory.GetCurrentDirectory()), configuration.GetConnectionString(SQLITE))));
             else if (persistence == SQLSERVER)
                 services.AddDbContext<T>(options => options.UseSqlServer(configuration.GetConnectionString(SQLSERVER)), ServiceLifetime.Scoped);
+            else if (persistence == MYSQL)
+                services.AddDbContext<T>(options => options.UseMySQL(configuration.GetConnectionString(MYSQL)), ServiceLifetime.Scoped);
             else
                 throw new ArgumentException("No DbContext defined !");
         }
@@ -79,6 +82,8 @@ namespace Newtomsoft.Tools
                 optionBuilder.UseNpgsql(connectionString);
             else if (persistence == SQLITE)
                 optionBuilder.UseSqlite(connectionString);
+            else if (persistence == MYSQL)
+                optionBuilder.UseMySQL(connectionString);
         }
     }
 }
